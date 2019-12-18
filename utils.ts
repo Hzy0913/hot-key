@@ -1,6 +1,7 @@
 import { currentType } from './types';
 
-const delayer = (delay = 10) => new Promise(resolve => setTimeout(() => resolve(true), delay));
+const delayer = (delay = 10) => new Promise(resolve => setTimeout(() =>
+  resolve(true), delay));
 
 const countClosure = (delay?: number) => {
   let pollCount = 0;

@@ -187,8 +187,8 @@ const hotKeyFactory: any = {
     const { control } = this.operationControl[id] as OperationControlType
       || { control: undefined };
 
-    if (control === 'ALL') return;
-    if (!control || !control.includes(keyName)) return true;
+    if (typeof control === 'string' && control === 'ALL') return;
+    if (!control || !(Array.isArray(control) && control.includes(keyName))) return true;
   },
   action(keyName, className) {
     return new Promise((resolve, reject) => {
@@ -212,29 +212,26 @@ const hotKeyFactory: any = {
   },
   actionCompose(operation, keyName, callback) {
     let actionPromise = null;
-    let prveValue = null;
     const { listener } = hotKeyFactory;
 
     operation.forEach((value, index) => {
       if (!actionPromise) {
-        prveValue = value;
         actionPromise = hotKeyFactory.action(keyName, value);
         if (index === (operation.length - 1)) {
-          actionPromise.then(res => {
+          actionPromise.then((res) => {
             listener(callback, res, index);
             hotKeyFactory.unlock();
             return this;
           });
         }
       } else {
-        actionPromise.then(res => {
+        actionPromise.then((res) => {
           listener(callback, res, index - 1);
-          prveValue = value;
           return hotKeyFactory.action(keyName, value);
         });
 
         if (index === (operation.length - 1)) {
-          actionPromise.then(res => {
+          actionPromise.then((res) => {
             listener(callback, res, index);
             hotKeyFactory.unlock();
             return this;
@@ -257,7 +254,8 @@ const hotKeyFactory: any = {
     const { operation = ['.hot-key-focus-container'] } = this.hotKeyConfig[keyName] || {};
     const operations = Array.isArray(operation[0]) ? operation : [operation]; // 存在一个按键操作多个节点
 
-    operations.forEach(operationItem => hotKeyFactory.actionCompose(operationItem, keyName, callback));
+    operations.forEach(operationItem =>
+      hotKeyFactory.actionCompose(operationItem, keyName, callback));
   },
   find(selector, isNew) {
     let currentNode;
@@ -272,7 +270,8 @@ const hotKeyFactory: any = {
   next(filterNum = 1) {
     for (let i = 0; i < filterNum; i++) {
       if (!this.currentNode) {
-        hotKeyFactory.log(true, { waring: 'There is a warning in the next，trigger Dom is not found ' });
+        hotKeyFactory.log(true,
+          { waring: 'There is a warning in the next，trigger Dom is not found ' });
         break;
       }
       this.currentNode = this.currentNode.nextSibling;
@@ -283,7 +282,8 @@ const hotKeyFactory: any = {
   prev(filterNum = 1) {
     for (let i = 0; i < filterNum; i++) {
       if (!this.currentNode) {
-        hotKeyFactory.log(true, { waring: 'There is a warning in the prev，trigger Dom is not found ' });
+        hotKeyFactory.log(true,
+          { waring: 'There is a warning in the prev，trigger Dom is not found ' });
         break;
       }
       this.currentNode = this.currentNode.previousSibling;
@@ -297,7 +297,7 @@ const hotKeyFactory: any = {
     hotKeyFactory.log(!container, { waring: 'the set focus container Dom is not found' });
   },
   clearFocus() {
-    const focusContainer = document.querySelectorAll('.hot-key-focus-container');
+    const focusContainer = Array.from(document.querySelectorAll('.hot-key-focus-container'));
 
     for (const dom of focusContainer) {
       dom.classList.remove('hot-key-focus-container');
@@ -313,7 +313,9 @@ const hotKeyFactory: any = {
   },
   getFocusId() {
     const focusContainer = document.querySelector('.hot-key-focus-container');
-    if (!focusContainer) return hotKeyFactory.log(true, { waring: 'the focus container is not found' });
+    if (!focusContainer) {
+      return hotKeyFactory.log(true, { waring: 'the focus container is not found' });
+    }
 
     let classList;
     const currentClassList = Array.from(focusContainer.classList) || [];
@@ -327,7 +329,8 @@ const hotKeyFactory: any = {
 
       classList = Array.from(hotKeyIdNode.classList) || [];
     }
-    const [, id] = (classList.find(className => className.includes('hot-key-id=')) || '').split('=');
+    const [, id] = (classList.find(className =>
+      className.includes('hot-key-id=')) || '').split('=');
     this.focusId = id;
 
     return id;

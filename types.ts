@@ -2,21 +2,21 @@ export interface Options {
   keys?: string[];
   handler?: string;
   observerCallback?: (any) => void;
-  pressed?: (any) => void;
+  pressed: (any) => void;
   log?: boolean;
   font?: string;
   length?: number;
   filter?: (any) => boolean;
-  hotKeyConfig?: HotKeyConfigType;
-  operationControl?: OperationControlType;
+  hotKeyConfig: HotKeyConfigType;
+  operationControl: OperationControlType;
   clickBefore?: () => void;
 }
 
-type FindFunc = (selector: string, isNew: boolean) => QueryNodeType;
-type NextFunc = (filterNum: number) => QueryNodeType;
-type PrevFunc = (filterNum: number) => QueryNodeType;
-type SetFocusFunc = (target: HTMLElement) => void;
-type ClearFocus = (target: HTMLElement) => void;
+export type FindFunc = (selector: string, isNew: boolean) => QueryNodeType;
+export type NextFunc = (filterNum: number) => QueryNodeType;
+export type PrevFunc = (filterNum: number) => QueryNodeType;
+export type SetFocusFunc = (target: HTMLElement) => void;
+export type ClearFocus = (target: HTMLElement) => void;
 
 export type currentType = {
   selector: string;
@@ -56,13 +56,15 @@ export interface HotKeyConfigType {
   };
 }
 
+type OperationControlTypeA = {
+  control: 'ALL' | string[];
+  dynamicSelector?: {
+    [keyName: string]: string;
+  }
+};
+
 export interface OperationControlType {
-  [keyId: string ]: {
-    control: 'ALL' | string[];
-    dynamicSelector: {
-      [keyName: string]: string;
-    }
-  };
+  [keyId: string ]: OperationControlTypeA;
 }
 
 export type hotKeyFactoryType = any;

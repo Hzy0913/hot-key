@@ -15,6 +15,12 @@ type PrevFunc = (filterNum: number) => QueryNodeType;
 type SetFocusFunc = (target: HTMLElement) => void;
 type ClearFocus = (target: HTMLElement) => void;
 
+export type currentType = {
+  selector: string;
+  filterText?: string;
+  filterIndex?: number;
+};
+
 export interface QueryNodeType {
   currentNode: HTMLElement;
   find: FindFunc;
@@ -37,6 +43,23 @@ export interface ControllerType {
   unbind: (keys: string[]) => string[];
   on: (callback: (any) => void) => void;
   off: (callback: (any) => void) => void;
+}
+
+export interface HotKeyConfigType {
+  [keyName: string]: {
+    describe: string;
+    operation?: string[];
+    dynamic?: boolean;
+  };
+}
+
+export interface OperationControlType {
+  [keyId: string ]: {
+    control: 'ALL' | string[];
+    dynamicSelector: {
+      [keyName: string]: string;
+    }
+  };
 }
 
 export type hotKeyFactoryType = any;

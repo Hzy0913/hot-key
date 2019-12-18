@@ -7,6 +7,9 @@ export interface Options {
   font?: string;
   length?: number;
   filter?: (any) => boolean;
+  hotKeyConfig?: HotKeyConfigType;
+  operationControl?: OperationControlType;
+  clickBefore?: () => void;
 }
 
 type FindFunc = (selector: string, isNew: boolean) => QueryNodeType;

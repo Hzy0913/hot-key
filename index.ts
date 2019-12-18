@@ -358,18 +358,18 @@ const hotKeyFactory: any = {
       handles.splice(handleIndex, 1);
     }
   },
-  listener(callback, result = {}, index) {
+  listener(callback, result: any, index) {
     const node = result.nodeType === 1 ? result : result.currentNode;
     hotKeyFactory.handles.forEach(handle => handle(node, index));
 
     callback && callback(node, index);
   },
-  log(isShowLog, { keyName, waring } = {}) {
+  log(isShowLog: boolean, { keyName, waring }: { keyName: string; waring?: string }) {
     if (!this.showLog || !isShowLog) return;
 
     if (keyName) console.log(`[hot-key]: ${keyName}`);
     if (waring) console.log(`[hot-key-waring]: ${waring}`);
-  }
+  },
 };
 
 function hotKey(option) {
@@ -387,8 +387,5 @@ hotKey.hotKeyBindClass = function (id, otherClassName = '') {
 hotKey.hotKeyNotFilter = function (otherClassName = '') {
   return `${otherClassName} hot-key-not-filter`;
 };
-
-hotKey.hotKeyConfig = defaultHotKeyConfig;
-hotKey.operationControl = defaultOperationControl;
 
 export default hotKey;

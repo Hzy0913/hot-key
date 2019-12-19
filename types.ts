@@ -4,17 +4,15 @@ export interface Options {
   observerCallback?: (any) => void;
   pressed: (any) => void;
   log?: boolean;
-  font?: string;
-  length?: number;
   filter?: (any) => boolean;
   hotKeyConfig: HotKeyConfigType;
   operationControl: OperationControlType;
   clickBefore?: () => void;
 }
 
-export type FindFunc = (selector: string, isNew: boolean) => QueryNodeType;
-export type NextFunc = (filterNum: number) => QueryNodeType;
-export type PrevFunc = (filterNum: number) => QueryNodeType;
+export type FindFunc = (selector: string, isNew?: boolean) => QueryNodeType;
+export type NextFunc = (filterNum?: number) => QueryNodeType;
+export type PrevFunc = (filterNum?: number) => QueryNodeType;
 export type SetFocusFunc = (target: HTMLElement) => void;
 export type ClearFocus = (target: HTMLElement) => void;
 
@@ -35,17 +33,20 @@ export interface QueryNodeType {
 }
 
 export interface ControllerType {
-  keys: string[];
-  action: (keyName: string, callback: (any) => void) => void;
+  readonly keys: string[];
+  readonly hotKeyConfig: HotKeyConfigType;
+  readonly operationControl: OperationControlType;
+  readonly log: boolean;
+  action: (keyName: string, callback?: (any) => void) => void;
   find: FindFunc;
   observerCallback: (any) => void;
   pressed: (any) => void;
-  log: boolean;
   observerTrigger: () => void;
   bind: (keys: string[], callback: (any) => void) => void;
   unbind: (keys: string[]) => string[];
   on: (callback: (any) => void) => void;
   off: (callback: (any) => void) => void;
+  setFocus: SetFocusFunc;
 }
 
 export interface HotKeyConfigType {
@@ -56,7 +57,7 @@ export interface HotKeyConfigType {
   };
 }
 
-type OperationControlTypeA = {
+type OperationType= {
   control: 'ALL' | string[];
   dynamicSelector?: {
     [keyName: string]: string;
@@ -64,7 +65,7 @@ type OperationControlTypeA = {
 };
 
 export interface OperationControlType {
-  [keyId: string ]: OperationControlTypeA;
+  [keyId: string]: OperationType;
 }
 
 export type hotKeyFactoryType = any;

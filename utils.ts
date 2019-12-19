@@ -20,36 +20,30 @@ const countClosure = (delay?: number) => {
 const queryCount = countClosure();
 
 const queryHotKey = (operator, currentDom) => {
-  const isSelector = ['.', '#'].includes(operator.charAt(0));
-  const query = isSelector ? operator : `.hot-key-part-${operator}`;
   const queryAll = [];
 
-  if (isSelector) {
-    let queryjoin = '';
-    const querys = query.split(' ');
-    querys.forEach((value, index) => {
-      const [selectorText, filterText] : [string, string | void] = value.split('=');
-      const [selectorIndex, filterIndex] : [string, number | void] = value.split(':');
-      const selector = (filterText && selectorText) ||
-        (filterIndex && selectorIndex) || selectorText;
-      queryjoin = (queryjoin += ` ${selector}`).trim();
+  let queryjoin = '';
+  const querys = operator.split(' ');
+  querys.forEach((value, index) => {
+    const [selectorText, filterText] : [string, string | void] = value.split('=');
+    const [selectorIndex, filterIndex] : [string, number | void] = value.split(':');
+    const selector = (filterText && selectorText) ||
+      (filterIndex && selectorIndex) || selectorText;
+    queryjoin = (queryjoin += ` ${selector}`).trim();
 
-      if (filterText || filterIndex) {
-        queryAll.push({ filterText, filterIndex, selector: queryjoin });
-        queryjoin = '';
-      }
+    if (filterText || filterIndex) {
+      queryAll.push({ filterText, filterIndex, selector: queryjoin });
+      queryjoin = '';
+    }
 
-      if (index === (querys.length - 1) && queryjoin) {
-        queryAll.push({ filterText, filterIndex, selector: queryjoin });
-      }
-    });
-  }
+    if (index === (querys.length - 1) && queryjoin) {
+      queryAll.push({ filterText, filterIndex, selector: queryjoin });
+    }
+  });
 
   const queryContainer = currentDom || document;
 
-  if (!isSelector) return queryContainer.querySelector(query);
-
-  return queryAll.reduce((prev, current: currentType) => {
+  return queryAll.reduce((prev: HTMLElement, current: currentType) => {
     const { selector, filterText, filterIndex } = current;
 
     if (filterText) {

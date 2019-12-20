@@ -112,7 +112,7 @@ const hotKeyFactory: any = {
 
     return actionNode.currentNode;
   },
-  triggerRegister(keyName) {
+  triggerRegister(keyName, callback) {
     if (!hotKeyFactory.registerKey) return;
 
     const trigger = this.registerKey.find(item => item.key === keyName);
@@ -128,9 +128,14 @@ const hotKeyFactory: any = {
       return !!queryNode.currentNode;
     });
 
-    targetNode.currentNode && targetNode.click(targetNode);
+    if (targetNode.currentNode) {
+      targetNode.click(targetNode);
+      hotKeyFactory.listener(callback, targetNode, 0, keyName);
+    }
+
     hotKeyFactory.log(!targetNode.currentNode,
       { waring: 'register hot-key trigger Dom not found' });
+    return true;
   },
   register(keyName) {
     return containerName => (className) => {
@@ -231,7 +236,7 @@ const hotKeyFactory: any = {
   async actuator(keyName, callback) {
     hotKeyFactory.log(true, { keyName });
 
-    if (hotKeyFactory.triggerRegister(keyName)) return;
+    if (hotKeyFactory.triggerRegister(keyName, callback)) return;
     if (hotKeyFactory.rejectDoAction(keyName)) return;
 
     const { operation = ['.hot-key-focus-container'] } = this.hotKeyConfig[keyName] || {};

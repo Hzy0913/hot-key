@@ -1,7 +1,6 @@
-import keymaster from 'keymaster';
-import { Options, HotKeyConfigType, OperationControlType } from './types';
+import * as keymaster from 'keymaster';
+import { Options, HotKeyConfigType, FindFunc, ControllerType } from './types';
 import { queryHotKey, queryCount } from './utils';
-import './style.less';
 
 const keyboard = keymaster.noConflict();
 
@@ -36,7 +35,7 @@ const keyboard = keymaster.noConflict();
 const hotKeyFactory: any = {
   constructor({
     keys = [],
-    handler = '$',
+    handler,
     observerCallback,
     pressed,
     log = false,
@@ -44,9 +43,9 @@ const hotKeyFactory: any = {
     operationControl = {},
     filter,
     clickBefore,
-  }: Options) {
+  }) {
     keyboard(keys.join(), pressed);
-    keyboard.filter = filter;
+    filter && (keyboard.filter = filter);
 
     const observe = observerCallback && new MutationObserver(observerCallback);
     hotKeyFactory.showLog = log;
@@ -60,7 +59,6 @@ const hotKeyFactory: any = {
       operationControl,
       action: this.actuator,
       find: this.find,
-      next: this.next,
       getFocusId: this.getFocusId.bind(this),
       register: this.register,
       unRegister: this.unRegister,
@@ -76,7 +74,8 @@ const hotKeyFactory: any = {
         observe.observe(containerDom, config);
       },
     };
-    if (!window[handler]) {
+    if (typeof handler === 'string') {
+      if (window[handler]) throw ` The ${handler} property already exists in the window `;
       window[handler] = controller;
     }
     return controller;
@@ -184,8 +183,7 @@ const hotKeyFactory: any = {
     const id = hotKeyFactory.getFocusId();
     if (!id) return true;
 
-    const { control } = this.operationControl[id] as OperationControlType
-      || { control: undefined };
+    const { control } = this.operationControl[id] || { control: undefined };
 
     if (typeof control === 'string' && control === 'ALL') return;
     if (!control || !(Array.isArray(control) && control.includes(keyName))) return true;
@@ -257,7 +255,7 @@ const hotKeyFactory: any = {
     operations.forEach(operationItem =>
       hotKeyFactory.actionCompose(operationItem, keyName, callback));
   },
-  find(selector, isNew) {
+  find(selector, isNew): FindFunc {
     let currentNode;
     if (!this.currentNode || isNew) {
       currentNode = hotKeyFactory.asyncQueryHotKeyDom(selector);
@@ -271,7 +269,7 @@ const hotKeyFactory: any = {
     for (let i = 0; i < filterNum; i++) {
       if (!this.currentNode) {
         hotKeyFactory.log(true,
-          { waring: 'There is a warning in the next，trigger Dom is not found ' });
+          { waring: 'There is a warning in the next, trigger Dom is not found ' });
         break;
       }
       this.currentNode = this.currentNode.nextSibling;
@@ -283,7 +281,7 @@ const hotKeyFactory: any = {
     for (let i = 0; i < filterNum; i++) {
       if (!this.currentNode) {
         hotKeyFactory.log(true,
-          { waring: 'There is a warning in the prev，trigger Dom is not found ' });
+          { waring: 'There is a warning in the prev, trigger Dom is not found ' });
         break;
       }
       this.currentNode = this.currentNode.previousSibling;
@@ -372,8 +370,8 @@ const hotKeyFactory: any = {
   },
 };
 
-function hotKey(option) {
-  return hotKeyFactory.constructor.call(hotKeyFactory, option);
+function hotKey(options: Options): ControllerType {
+  return hotKeyFactory.constructor.call(hotKeyFactory, options);
 }
 
 hotKey.hotKeyPart = function (partName, otherClassName = '') {

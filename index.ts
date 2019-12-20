@@ -213,19 +213,19 @@ const hotKeyFactory: any = {
         actionPromise = hotKeyFactory.action(keyName, value);
         if (index === (operation.length - 1)) {
           actionPromise.then((res) => {
-            listener(callback, res, index);
+            listener(callback, res, index, keyName);
             return this;
           });
         }
       } else {
         actionPromise.then((res) => {
-          listener(callback, res, index - 1);
+          listener(callback, res, index - 1, keyName);
           return hotKeyFactory.action(keyName, value);
         });
 
         if (index === (operation.length - 1)) {
           actionPromise.then((res) => {
-            listener(callback, res, index);
+            listener(callback, res, index, keyName);
             return this;
           });
         }
@@ -344,11 +344,11 @@ const hotKeyFactory: any = {
       handles.splice(handleIndex, 1);
     }
   },
-  listener(callback, result: any, index) {
+  listener(callback, result: any, index, keyName) {
     const node = result.nodeType === 1 ? result : result.currentNode;
-    hotKeyFactory.handles.forEach(handle => handle(node, index));
+    hotKeyFactory.handles.forEach(handle => handle(node, index, keyName));
 
-    callback && callback(node, index);
+    callback && callback(node, index, keyName);
   },
   log(isShowLog: boolean, { keyName, waring }: { keyName: string; waring?: string }) {
     if (!this.showLog || !isShowLog) return;

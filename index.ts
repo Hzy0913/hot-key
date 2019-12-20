@@ -100,14 +100,9 @@ const hotKeyFactory: any = {
     const { dynamicSelector = {} } = this.operationControl[this.focusId] || {};
     const targetKey = Object.keys(dynamicSelector).find(key => key.includes(keyName));
     const domSelector = dynamicSelector[targetKey];
-    let actionNode = hotKeyFactory.queryNode(target).find(domSelector);
+    const actionNode = hotKeyFactory.queryNode(target).find(domSelector);
 
-    const fnName = { down: 'next', up: 'prev' };
-    if ('updown'.includes(keyName) && actionNode.currentNode) {
-      actionNode = actionNode[fnName[keyName]]();
-    }
-
-    actionNode.currentNode && actionNode.click(keyName, actionNode.currentNode);
+    actionNode.currentNode && actionNode.click(keyName, actionNode);
 
     if (!actionNode.currentNode) {
       hotKeyFactory.log(true,
@@ -125,16 +120,17 @@ const hotKeyFactory: any = {
 
     const { container, className } = trigger;
     const containerDom = this.asyncQueryHotKeyDom(container);
-    let targetDom;
+    let targetNode;
     const classNameList = Array.isArray(className) ? className : [className];
     classNameList.some((name) => {
-      const queryDom = hotKeyFactory.queryNode(containerDom).find(name);
-      targetDom = queryDom;
-      return !!queryDom.currentNode;
+      const queryNode = hotKeyFactory.queryNode(containerDom).find(name);
+      targetNode = queryNode;
+      return !!queryNode.currentNode;
     });
 
-    targetDom.currentNode && targetDom.click();
-    hotKeyFactory.log(!targetDom.currentNode, { waring: 'register hot-key trigger Dom not found' });
+    targetNode.currentNode && targetNode.click(targetNode);
+    hotKeyFactory.log(!targetNode.currentNode,
+      { waring: 'register hot-key trigger Dom not found' });
   },
   register(keyName) {
     return containerName => (className) => {
@@ -172,8 +168,8 @@ const hotKeyFactory: any = {
       clearFocus,
       currentNode: target,
       click(keyName, target) {
-        hotKeyFactory.clickBefore(keyName, target);
-        this.currentNode.click();
+        const notClick = hotKeyFactory.clickBefore(keyName, target);
+        notClick || this.currentNode.click();
       },
     };
   },
@@ -196,7 +192,7 @@ const hotKeyFactory: any = {
       if (target) {
         const hotKeyProto = hotKeyFactory.queryNode(target);
 
-        hotKeyProto.click(keyName, target);
+        hotKeyProto.click(keyName, hotKeyProto);
 
         resolve(hotKeyProto);
       } else {
@@ -294,7 +290,7 @@ const hotKeyFactory: any = {
   },
   clickBefore(keyName, target) {
     const { clickBeforeProp } = hotKeyFactory;
-    clickBeforeProp && clickBeforeProp(keyName, target);
+    if (clickBeforeProp) return clickBeforeProp(keyName, target);
   },
   getFocusId() {
     const focusContainer = document.querySelector('.hot-key-focus-container');

@@ -204,37 +204,35 @@ const hotKeyFactory: any = {
       }
     });
   },
-  actionCompose(operation, keyName, callback) {
+  async actionCompose(operation, keyName, callback) {
     let actionPromise = null;
     const { listener } = hotKeyFactory;
 
-    operation.forEach((value, index) => {
+    for (let index = 0; index < operation.length; index++) {
+      const className = operation[index];
+
       if (!actionPromise) {
-        actionPromise = hotKeyFactory.action(keyName, value);
+        actionPromise = hotKeyFactory.action(keyName, className);
         if (index === (operation.length - 1)) {
-          actionPromise.then((res) => {
-            listener(callback, res, index, keyName);
-            return this;
-          });
+          const res = await actionPromise;
+          listener(callback, res, index, keyName);
         }
       } else {
-        actionPromise.then((res) => {
-          listener(callback, res, index - 1, keyName);
-          return hotKeyFactory.action(keyName, value);
-        });
+        const res = await actionPromise;
+        listener(callback, res, index - 1, keyName);
+
+        actionPromise = hotKeyFactory.action(keyName, className);
 
         if (index === (operation.length - 1)) {
-          actionPromise.then((res) => {
-            listener(callback, res, index, keyName);
-            return this;
-          });
+          const res = await actionPromise;
+          listener(callback, res, index, keyName);
         }
       }
-    });
+    }
 
     return actionPromise;
   },
-  actuator(keyName, callback) {
+  async actuator(keyName, callback) {
     hotKeyFactory.log(true, { keyName });
 
     if (hotKeyFactory.triggerRegister(keyName)) return;
@@ -243,8 +241,9 @@ const hotKeyFactory: any = {
     const { operation = ['.hot-key-focus-container'] } = this.hotKeyConfig[keyName] || {};
     const operations = Array.isArray(operation[0]) ? operation : [operation];
 
-    operations.forEach(operationItem =>
-      hotKeyFactory.actionCompose(operationItem, keyName, callback));
+    for (let index = 0; index < operations.length; index++) {
+      await hotKeyFactory.actionCompose(operations[index], keyName, callback);
+    }
   },
   find(selector, isNew): FindFunc {
     let currentNode;

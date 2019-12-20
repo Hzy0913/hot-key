@@ -107,7 +107,7 @@ const hotKeyFactory: any = {
       actionNode = actionNode[fnName[keyName]]();
     }
 
-    actionNode.currentNode && actionNode.click();
+    actionNode.currentNode && actionNode.click(keyName, actionNode.currentNode);
 
     if (!actionNode.currentNode) {
       hotKeyFactory.log(true,
@@ -171,8 +171,8 @@ const hotKeyFactory: any = {
       setFocus,
       clearFocus,
       currentNode: target,
-      click() {
-        hotKeyFactory.clickBefore();
+      click(keyName, target) {
+        hotKeyFactory.clickBefore(keyName, target);
         this.currentNode.click();
       },
     };
@@ -196,7 +196,7 @@ const hotKeyFactory: any = {
       if (target) {
         const hotKeyProto = hotKeyFactory.queryNode(target);
 
-        hotKeyProto.click();
+        hotKeyProto.click(keyName, target);
 
         resolve(hotKeyProto);
       } else {
@@ -292,9 +292,9 @@ const hotKeyFactory: any = {
     }
     hotKeyFactory.log(true, { log: 'the focus container is clear' });
   },
-  clickBefore() {
+  clickBefore(keyName, target) {
     const { clickBeforeProp } = hotKeyFactory;
-    clickBeforeProp && clickBeforeProp();
+    clickBeforeProp && clickBeforeProp(keyName, target);
   },
   getFocusId() {
     const focusContainer = document.querySelector('.hot-key-focus-container');

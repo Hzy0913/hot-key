@@ -243,9 +243,6 @@ const hotKeyFactory: any = {
   actuator(keyName, callback) {
     hotKeyFactory.log(true, { keyName });
 
-    // if (hotKeyFactory.lock) return;
-    hotKeyFactory.lock = true;
-
     if (hotKeyFactory.triggerRegister(keyName)) return;
     if (hotKeyFactory.rejectDoAction(keyName)) return;
 
@@ -306,9 +303,6 @@ const hotKeyFactory: any = {
     const { clickBeforeProp } = hotKeyFactory;
     clickBeforeProp && clickBeforeProp();
   },
-  unlock() {
-    hotKeyFactory.lock = false;
-  },
   getFocusId() {
     const focusContainer = document.querySelector('.hot-key-focus-container');
     if (!focusContainer) {
@@ -341,7 +335,7 @@ const hotKeyFactory: any = {
   },
   handles: [],
   on(callback) {
-    const handles = hotKeyFactory.handles || [];
+    const handles = hotKeyFactory.handles;
     const isHaveEvent = handles.some(handle => handle === callback);
 
     if (!isHaveEvent) {
@@ -349,7 +343,7 @@ const hotKeyFactory: any = {
     }
   },
   off(callback) {
-    const handles = hotKeyFactory.handles || [];
+    const handles = hotKeyFactory.handles;
     const handleIndex = handles.findIndex(handle => handle === callback);
 
     if (~handleIndex) {
@@ -373,10 +367,6 @@ const hotKeyFactory: any = {
 function hotKey(options: Options): ControllerType {
   return hotKeyFactory.constructor.call(hotKeyFactory, options);
 }
-
-hotKey.hotKeyPart = function (partName, otherClassName = '') {
-  return `${otherClassName} hot-key-part-${partName}`;
-};
 
 hotKey.hotKeyBindClass = function (id, otherClassName = '') {
   return `${otherClassName} hot-key-id hot-key-id=${id}`;

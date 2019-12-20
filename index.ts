@@ -135,8 +135,6 @@ const hotKeyFactory: any = {
 
     targetDom.currentNode && targetDom.click();
     hotKeyFactory.log(!targetDom.currentNode, { waring: 'register hot-key trigger Dom not found' });
-
-    hotKeyFactory.unlock();
   },
   register(keyName) {
     return containerName => (className) => {
@@ -199,12 +197,10 @@ const hotKeyFactory: any = {
         const hotKeyProto = hotKeyFactory.queryNode(target);
 
         hotKeyProto.click();
-        hotKeyFactory.unlock();
 
         resolve(hotKeyProto);
       } else {
         hotKeyFactory.log(true, { waring: `not found hot ket target of [${className}]` });
-        hotKeyFactory.unlock();
       }
     });
   },
@@ -218,7 +214,6 @@ const hotKeyFactory: any = {
         if (index === (operation.length - 1)) {
           actionPromise.then((res) => {
             listener(callback, res, index);
-            hotKeyFactory.unlock();
             return this;
           });
         }
@@ -231,7 +226,6 @@ const hotKeyFactory: any = {
         if (index === (operation.length - 1)) {
           actionPromise.then((res) => {
             listener(callback, res, index);
-            hotKeyFactory.unlock();
             return this;
           });
         }
@@ -247,7 +241,7 @@ const hotKeyFactory: any = {
     if (hotKeyFactory.rejectDoAction(keyName)) return;
 
     const { operation = ['.hot-key-focus-container'] } = this.hotKeyConfig[keyName] || {};
-    const operations = Array.isArray(operation[0]) ? operation : [operation]; // 存在一个按键操作多个节点
+    const operations = Array.isArray(operation[0]) ? operation : [operation];
 
     operations.forEach(operationItem =>
       hotKeyFactory.actionCompose(operationItem, keyName, callback));

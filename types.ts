@@ -15,6 +15,8 @@ export type NextFunc = (filterNum?: number) => QueryNodeType;
 export type PrevFunc = (filterNum?: number) => QueryNodeType;
 export type SetFocusFunc = (target: HTMLElement) => void;
 export type ClearFocus = (target: HTMLElement) => void;
+export type RegisterFunc = (keyName: string) => (selectors: string) =>
+  (targetSelectors: string[]) => void;
 
 export type currentType = {
   selector: string;
@@ -29,7 +31,7 @@ export interface QueryNodeType {
   prev: PrevFunc;
   setFocus: SetFocusFunc;
   clearFocus: ClearFocus;
-  click: (any) => void;
+  click: () => void;
 }
 
 export interface ControllerType {
@@ -47,6 +49,11 @@ export interface ControllerType {
   on: (callback: (any) => void) => void;
   off: (callback: (any) => void) => void;
   setFocus: SetFocusFunc;
+  getFocusId: () => string | number;
+  register: RegisterFunc;
+  unRegister: (keyName: string) => void;
+  clearFocus: ClearFocus;
+  observer: (any) => any;
 }
 
 export interface HotKeyConfigType {

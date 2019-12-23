@@ -1,5 +1,5 @@
 import * as keymaster from 'keymaster';
-import { Options, HotKeyConfigType, FindFunc, ControllerType } from './types';
+import { Options, HotKeyConfigType, FindFunc, ControllerType, QueryNodeType } from './types';
 import { queryHotKey, queryCount } from './utils';
 
 const keyboard = keymaster.noConflict();
@@ -120,7 +120,7 @@ const hotKeyFactory: any = {
 
     const { container, className } = trigger;
     const containerDom = this.asyncQueryHotKeyDom(container);
-    let targetNode;
+    let targetNode: QueryNodeType;
     const classNameList = Array.isArray(className) ? className : [className];
     classNameList.some((name) => {
       const queryNode = hotKeyFactory.queryNode(containerDom).find(name);
@@ -129,7 +129,7 @@ const hotKeyFactory: any = {
     });
 
     if (targetNode.currentNode) {
-      targetNode.click(targetNode);
+      targetNode.click(keyName, targetNode);
       hotKeyFactory.listener(callback, targetNode, 0, keyName);
     }
 
@@ -160,10 +160,10 @@ const hotKeyFactory: any = {
       hotKeyFactory.registerKey = keys;
     }
   },
-  queryNode(target) {
+  queryNode(target: HTMLElement): QueryNodeType {
     const {
       find, next, prev, setFocus, clearFocus,
-    } = this;  // tslint:disable-line
+    } = this as QueryNodeType;  // tslint:disable-line
 
     return {
       find,
@@ -172,8 +172,8 @@ const hotKeyFactory: any = {
       setFocus,
       clearFocus,
       currentNode: target,
-      click(keyName, target) {
-        const notClick = hotKeyFactory.clickBefore(keyName, target);
+      click(keyName, node) {
+        const notClick = hotKeyFactory.clickBefore(keyName, node);
         notClick || this.currentNode.click();
       },
     };
@@ -233,7 +233,7 @@ const hotKeyFactory: any = {
 
     return actionPromise;
   },
-  async actuator(keyName, callback) {
+  async actuator(keyName: string, callback: (target, index, keyName) => void) {
     hotKeyFactory.log(true, { keyName });
 
     if (hotKeyFactory.triggerRegister(keyName, callback)) return;
@@ -293,9 +293,9 @@ const hotKeyFactory: any = {
     }
     hotKeyFactory.log(true, { log: 'the focus container is clear' });
   },
-  clickBefore(keyName, target) {
+  clickBefore(keyName, node) {
     const { clickBeforeProp } = hotKeyFactory;
-    if (clickBeforeProp) return clickBeforeProp(keyName, target);
+    if (clickBeforeProp) return clickBeforeProp(keyName, node);
   },
   getFocusId() {
     const focusContainer = document.querySelector('.hot-key-focus-container');
@@ -344,8 +344,8 @@ const hotKeyFactory: any = {
       handles.splice(handleIndex, 1);
     }
   },
-  listener(callback, result: any, index, keyName) {
-    const node = result.nodeType === 1 ? result : result.currentNode;
+  listener(callback, result: any, index: number, keyName: string) {
+    const node: HTMLElement = result.nodeType === 1 ? result : result.currentNode;
     hotKeyFactory.handles.forEach(handle => handle(node, index, keyName));
 
     callback && callback(node, index, keyName);
@@ -364,10 +364,6 @@ function hotKey(options: Options): ControllerType {
 
 hotKey.hotKeyBindClass = function (id, otherClassName = '') {
   return `${otherClassName} hot-key-id hot-key-id=${id}`;
-};
-
-hotKey.hotKeyNotFilter = function (otherClassName = '') {
-  return `${otherClassName} hot-key-not-filter`;
 };
 
 export default hotKey;

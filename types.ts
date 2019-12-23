@@ -50,6 +50,7 @@ export interface ControllerType {
   on: (callback: (target, index, keyName) => void) => void;
   off: (callback: (target, index, keyName) => void) => void;
   setFocus: SetFocusFunc;
+  setFocusId: <T>(id: T) => T;
   getFocusId: () => string | number;
   register: RegisterFunc;
   unRegister: (keyName: string) => void;

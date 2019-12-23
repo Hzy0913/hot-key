@@ -59,6 +59,7 @@ const hotKeyFactory: any = {
       operationControl,
       action: this.actuator,
       find: this.find,
+      setFocusId: this.setFocusId,
       getFocusId: this.getFocusId.bind(this),
       register: this.register,
       unRegister: this.unRegister,
@@ -297,7 +298,13 @@ const hotKeyFactory: any = {
     const { clickBeforeProp } = hotKeyFactory;
     if (clickBeforeProp) return clickBeforeProp(keyName, node);
   },
+  setFocusId(id?: string | number | void) {
+    return hotKeyFactory.focusId = id;
+  },
   getFocusId() {
+    const { focusId } = hotKeyFactory;
+    if (typeof focusId === 'string' || typeof focusId === 'number') return focusId;
+
     const focusContainer = document.querySelector('.hot-key-focus-container');
     if (!focusContainer) {
       return hotKeyFactory.log(true, { waring: 'the focus container is not found' });

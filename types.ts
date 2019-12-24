@@ -10,7 +10,7 @@ export interface Options {
   clickBefore?: (keyName, node) => void | boolean;
 }
 
-export type FindFunc = (selector: string, isNew?: boolean) => QueryNodeType;
+export type FindFunc = (selector: string, isNew?: boolean) => Promise<any>;
 export type NextFunc = (filterNum?: number) => QueryNodeType;
 export type PrevFunc = (filterNum?: number) => QueryNodeType;
 export type SetFocusFunc = (target: HTMLElement) => void;
@@ -50,7 +50,7 @@ export interface ControllerType {
   on: (callback: (target, index, keyName) => void) => void;
   off: (callback: (target, index, keyName) => void) => void;
   setFocus: SetFocusFunc;
-  setFocusId: <T>(id: T) => T;
+  setFocusId: <T>(id?: T) => T;
   getFocusId: () => string | number;
   register: RegisterFunc;
   unRegister: (keyName: string) => void;

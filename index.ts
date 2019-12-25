@@ -122,7 +122,6 @@ const hotKeyFactory: any = {
 
     const { container, className } = trigger;
     const containerDom = await this.asyncQueryHotKeyDom(container, undefined, false);
-    console.log(containerDom, 666666612)
     let targetNode: QueryNodeType;
     const classNameList = Array.isArray(className) ? className : [className];
 
@@ -133,12 +132,6 @@ const hotKeyFactory: any = {
       targetNode = queryNode;
       if (queryNode.currentNode) break;
     }
-    // classNameList.some((name) => {
-    //   const queryNode = hotKeyFactory.queryNode(containerDom).find(name);
-    //   targetNode = queryNode;
-    //   return !!queryNode.currentNode;
-    // });
-    console.log(targetNode, 66666661)
 
     if (targetNode.currentNode) {
       targetNode.click(keyName, targetNode);
@@ -200,7 +193,6 @@ const hotKeyFactory: any = {
     if (!control || !(Array.isArray(control) && control.includes(keyName))) return true;
   },
   action(keyName, className) {
-    console.log(keyName, 999999991)
     return new Promise(async (resolve, reject) => {
       const target = await this.asyncQueryHotKeyDom(className);
 
@@ -222,7 +214,6 @@ const hotKeyFactory: any = {
     let actionPromise = null;
     const { listener } = hotKeyFactory;
 
-    console.log(operation.length, 88888)
     for (let index = 0; index < operation.length; index++) {
       const className = operation[index];
 
@@ -253,7 +244,6 @@ const hotKeyFactory: any = {
     if (await hotKeyFactory.triggerRegister(keyName, callback, isPolling)) return;
     if (hotKeyFactory.rejectDoAction(keyName)) return;
 
-    console.log(11111111112)
     const { operation = ['.hot-key-focus-container'] } = this.hotKeyConfig[keyName] || {};
     const operations = Array.isArray(operation[0]) ? operation : [operation];
 

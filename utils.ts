@@ -6,18 +6,13 @@ const delayer = (delay = 10) => new Promise(resolve => setTimeout(() =>
 const countClosure = (delay?: number) => {
   let pollCount = 0;
 
-  return () => {
-    async function awaitQuery() {
-      await delayer(delay);
-    }
-    awaitQuery();
-
+  return async function awaitQuery(notEnd?: boolean) {
+    if (!notEnd) return 'done';
+    await delayer(delay);
     if (pollCount > 60) return 'done';
     pollCount++;
   };
 };
-
-const queryCount = countClosure();
 
 const queryHotKey = (operator, currentDom) => {
   const queryAll = [];
@@ -59,5 +54,5 @@ const queryHotKey = (operator, currentDom) => {
 
 export {
   queryHotKey,
-  queryCount,
+  countClosure,
 };

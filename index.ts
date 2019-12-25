@@ -192,11 +192,11 @@ const hotKeyFactory: any = {
     if (typeof control === 'string' && control === 'ALL') return;
     if (!control || !(Array.isArray(control) && control.includes(keyName))) return true;
   },
-  action(keyName, className) {
+  action(keyName, className, isPolling) {
     return new Promise(async (resolve, reject) => {
-      const target = await this.asyncQueryHotKeyDom(className);
+      const target = await this.asyncQueryHotKeyDom(className, undefined, isPolling);
 
-      const dynamicActionTarget = hotKeyFactory.dynamicAction(keyName, target);
+      const dynamicActionTarget = hotKeyFactory.dynamicAction(keyName, target, isPolling);
       if (dynamicActionTarget) return resolve(dynamicActionTarget);
 
       if (target) {
@@ -210,7 +210,7 @@ const hotKeyFactory: any = {
       }
     });
   },
-  async actionCompose(operation, keyName, callback) {
+  async actionCompose(operation: string[], keyName: string, callback: any, isPolling: boolean) {
     let actionPromise = null;
     const { listener } = hotKeyFactory;
 
@@ -218,7 +218,7 @@ const hotKeyFactory: any = {
       const className = operation[index];
 
       if (!actionPromise) {
-        actionPromise = hotKeyFactory.action(keyName, className);
+        actionPromise = hotKeyFactory.action(keyName, className, isPolling);
         if (index === (operation.length - 1)) {
           const res = await actionPromise;
           listener(callback, res, index, keyName);
@@ -227,7 +227,7 @@ const hotKeyFactory: any = {
         const res = await actionPromise;
         listener(callback, res, index - 1, keyName);
 
-        actionPromise = hotKeyFactory.action(keyName, className);
+        actionPromise = hotKeyFactory.action(keyName, className, isPolling);
 
         if (index === (operation.length - 1)) {
           const res = await actionPromise;
@@ -248,7 +248,7 @@ const hotKeyFactory: any = {
     const operations = Array.isArray(operation[0]) ? operation : [operation];
 
     for (let index = 0; index < operations.length; index++) {
-      await hotKeyFactory.actionCompose(operations[index], keyName, callback);
+      await hotKeyFactory.actionCompose(operations[index], keyName, callback, isPolling);
     }
   },
   async find(selector: string, isNew: boolean | void, polling?: boolean | void) {

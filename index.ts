@@ -1,6 +1,6 @@
 import * as keymaster from 'keymaster';
-import { Options, HotKeyConfigType, FindFunc, ControllerType, QueryNodeType } from './types';
-import { queryHotKey, queryCount } from './utils';
+import { Options, HotKeyConfigType, ControllerType, QueryNodeType } from './types';
+import { queryHotKey, countClosure } from './utils';
 
 const keyboard = keymaster.noConflict();
 
@@ -81,27 +81,28 @@ const hotKeyFactory: any = {
     }
     return controller;
   },
-  asyncQueryHotKeyDom(operator, currentNode) {
-    const pollQueryDom = () => {
+  asyncQueryHotKeyDom(operator: string, currentNode: any, polling?: boolean) {
+    const queryCount = countClosure();
+    async function pollQueryDom() {
       const target = queryHotKey(operator, currentNode);
       if (target) return target;
 
-      const result = queryCount();
+      const result = await queryCount(polling);
       if (result === 'done') return;
 
       return pollQueryDom();
-    };
+    }
 
     return pollQueryDom();
   },
-  dynamicAction(keyName, target) {
+  dynamicAction(keyName: string, target: HTMLElement, polling?: boolean) {
     const { dynamic } = this.hotKeyConfig[keyName] as HotKeyConfigType || { dynamic: undefined };
     if (!dynamic) return;
 
     const { dynamicSelector = {} } = this.operationControl[this.focusId] || {};
     const targetKey = Object.keys(dynamicSelector).find(key => key.includes(keyName));
     const domSelector = dynamicSelector[targetKey];
-    const actionNode = hotKeyFactory.queryNode(target).find(domSelector);
+    const actionNode = hotKeyFactory.queryNode(target).find(domSelector, undefined, polling);
 
     actionNode.currentNode && actionNode.click(keyName, actionNode);
 
@@ -113,21 +114,31 @@ const hotKeyFactory: any = {
 
     return actionNode.currentNode;
   },
-  triggerRegister(keyName, callback) {
+  async triggerRegister(keyName: string, callback, polling?: boolean) {
     if (!hotKeyFactory.registerKey) return;
 
     const trigger = this.registerKey.find(item => item.key === keyName);
     if (!trigger) return;
 
     const { container, className } = trigger;
-    const containerDom = this.asyncQueryHotKeyDom(container);
+    const containerDom = await this.asyncQueryHotKeyDom(container, undefined, false);
+    console.log(containerDom, 666666612)
     let targetNode: QueryNodeType;
     const classNameList = Array.isArray(className) ? className : [className];
-    classNameList.some((name) => {
-      const queryNode = hotKeyFactory.queryNode(containerDom).find(name);
+
+    for (let i = 0; i < classNameList.length; i++) {
+      const selectorName = classNameList[i];
+      const queryNode = await hotKeyFactory.queryNode(containerDom)
+        .find(selectorName, undefined, polling);
       targetNode = queryNode;
-      return !!queryNode.currentNode;
-    });
+      if (queryNode.currentNode) break;
+    }
+    // classNameList.some((name) => {
+    //   const queryNode = hotKeyFactory.queryNode(containerDom).find(name);
+    //   targetNode = queryNode;
+    //   return !!queryNode.currentNode;
+    // });
+    console.log(targetNode, 66666661)
 
     if (targetNode.currentNode) {
       targetNode.click(keyName, targetNode);
@@ -189,8 +200,9 @@ const hotKeyFactory: any = {
     if (!control || !(Array.isArray(control) && control.includes(keyName))) return true;
   },
   action(keyName, className) {
-    return new Promise((resolve, reject) => {
-      const target = this.asyncQueryHotKeyDom(className);
+    console.log(keyName, 999999991)
+    return new Promise(async (resolve, reject) => {
+      const target = await this.asyncQueryHotKeyDom(className);
 
       const dynamicActionTarget = hotKeyFactory.dynamicAction(keyName, target);
       if (dynamicActionTarget) return resolve(dynamicActionTarget);
@@ -210,6 +222,7 @@ const hotKeyFactory: any = {
     let actionPromise = null;
     const { listener } = hotKeyFactory;
 
+    console.log(operation.length, 88888)
     for (let index = 0; index < operation.length; index++) {
       const className = operation[index];
 
@@ -234,12 +247,13 @@ const hotKeyFactory: any = {
 
     return actionPromise;
   },
-  async actuator(keyName: string, callback: (target, index, keyName) => void) {
+  async actuator(keyName: string, callback: (target, index, keyName) => void, isPolling) {
     hotKeyFactory.log(true, { keyName });
 
-    if (hotKeyFactory.triggerRegister(keyName, callback)) return;
+    if (await hotKeyFactory.triggerRegister(keyName, callback, isPolling)) return;
     if (hotKeyFactory.rejectDoAction(keyName)) return;
 
+    console.log(11111111112)
     const { operation = ['.hot-key-focus-container'] } = this.hotKeyConfig[keyName] || {};
     const operations = Array.isArray(operation[0]) ? operation : [operation];
 
@@ -247,12 +261,12 @@ const hotKeyFactory: any = {
       await hotKeyFactory.actionCompose(operations[index], keyName, callback);
     }
   },
-  find(selector, isNew): FindFunc {
+  async find(selector: string, isNew: boolean | void, polling?: boolean | void) {
     let currentNode;
     if (!this.currentNode || isNew) {
-      currentNode = hotKeyFactory.asyncQueryHotKeyDom(selector);
+      currentNode = await hotKeyFactory.asyncQueryHotKeyDom(selector, undefined, polling);
     } else {
-      currentNode = hotKeyFactory.asyncQueryHotKeyDom(selector, this.currentNode);
+      currentNode = await hotKeyFactory.asyncQueryHotKeyDom(selector, this.currentNode, polling);
     }
 
     return hotKeyFactory.queryNode(currentNode);

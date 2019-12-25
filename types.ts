@@ -40,7 +40,7 @@ export interface ControllerType {
   readonly hotKeyConfig: HotKeyConfigType;
   readonly operationControl: OperationControlType;
   readonly log: boolean;
-  action: (keyName: string, callback?: (node, index, keyName) => void) => void;
+  action: (keyName: string, callback?: (node, index, keyName) => void, poll?: boolean) => void;
   find: FindFunc;
   observerCallback: (any) => void;
   pressed: (any) => void;

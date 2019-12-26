@@ -19,8 +19,8 @@ export type ClearFocus = (target: HTMLElement) => void;
 export type QueryNodeFunc = (target: HTMLElement) => any;
 export type actionFunc = (keyName: string, className: string, poll?: boolean) => void;
 export type setFocusIdFunc = (id?: string | number | void) => string | number | void;
-export type RegisterFunc = (keyName: string) => (selectors: string) =>
-  (targetSelectors: string[]) => void;
+export type RegisterFunc = (keyName: string) => (containerName: string) =>
+  (className: string[]) => void;
 
 export type currentType = {
   selector: string;
@@ -38,8 +38,8 @@ export interface QueryNodeType {
   click: (keyName: string, node: QueryNodeType) => void;
 }
 
-export type registerKey = {
-  className: string;
+export type RegisterKey = {
+  className: string[];
   key: string;
   container: string;
 };
@@ -51,7 +51,7 @@ export interface HotKeyFactoryType {
   handles?: any[];
   hotKeyConfig?: HotKeyConfigType;
   operationControl?: OperationControlType;
-  clickBeforeProp: (keyName: string, node: QueryNodeType) => void;
+  clickBeforeProp?: (keyName: string, node: QueryNodeType) => void;
   asyncQueryHotKeyDom: (operator: string, currentDom: HTMLElement, polling?: boolean) =>
     HTMLElement | void;
   dynamicAction: (keyName: string, target: HTMLElement, polling?: boolean) =>
@@ -61,7 +61,7 @@ export interface HotKeyFactoryType {
   log: (isShowLog: boolean, option: { keyName?: string; waring?: string; log?: string })
     => void;
   triggerRegister: (keyName: string, callback, polling?: boolean) => Promise<any>;
-  registerKey: registerKey[];
+  registerKey?: RegisterKey[];
   listener: (callback, result: any, index: number, keyName: string) => void;
   register: RegisterFunc;
   actuator: (keyName: string, callback: (target, index, keyName) => void, isPolling) => void;
@@ -77,6 +77,10 @@ export interface HotKeyFactoryType {
   setFocus: SetFocusFunc;
   clearFocus: ClearFocus;
   setFocusId: setFocusIdFunc;
+  bind: (keys: string[], callBack: any) => void;
+  unbind: (keys: string[]) => void;
+  on: (callback: (any) => void) => void;
+  off: (callback: (any) => void) => void;
 }
 
 export interface ControllerType {

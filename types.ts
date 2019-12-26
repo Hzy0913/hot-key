@@ -106,7 +106,7 @@ export interface ControllerType {
 
 export interface HotKeyConfigType {
   [keyName: string]: {
-    describe: string;
+    describe?: string;
     operation?: string[] | string[][];
     dynamic?: boolean;
   };
@@ -122,5 +122,3 @@ type OperationType = {
 export interface OperationControlType {
   [keyId: string]: OperationType;
 }
-
-export type hotKeyFactoryType = any;

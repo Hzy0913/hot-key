@@ -1,5 +1,6 @@
 import * as keymaster from 'keymaster';
-import { Options, HotKeyConfigType, ControllerType, QueryNodeType } from './types';
+import { Options, HotKeyConfigType, ControllerType, QueryNodeType, HotKeyFactoryType,
+  RegisterKey } from './types';
 import { queryHotKey, countClosure } from './utils';
 
 const keyboard = keymaster.noConflict();
@@ -32,7 +33,7 @@ const keyboard = keymaster.noConflict();
  *
  */
 
-const hotKeyFactory: any = {
+const hotKeyFactory: HotKeyFactoryType = {
   constructor({
     keys = [],
     handler,
@@ -53,7 +54,7 @@ const hotKeyFactory: any = {
     hotKeyFactory.operationControl = operationControl;
     hotKeyFactory.clickBeforeProp = clickBefore;
 
-    const controller = {
+    const controller: ControllerType = {
       keys,
       hotKeyConfig,
       operationControl,
@@ -81,10 +82,10 @@ const hotKeyFactory: any = {
     }
     return controller;
   },
-  asyncQueryHotKeyDom(operator: string, currentNode: any, polling?: boolean) {
+  asyncQueryHotKeyDom(operator, currentDom, polling) {
     const queryCount = countClosure();
     async function pollQueryDom() {
-      const target = queryHotKey(operator, currentNode);
+      const target = queryHotKey(operator, currentDom);
       if (target) return target;
 
       const result = await queryCount(polling);
@@ -102,7 +103,8 @@ const hotKeyFactory: any = {
     const { dynamicSelector = {} } = this.operationControl[this.focusId] || {};
     const targetKey = Object.keys(dynamicSelector).find(key => key.includes(keyName));
     const domSelector = dynamicSelector[targetKey];
-    const actionNode = hotKeyFactory.queryNode(target).find(domSelector, undefined, polling);
+    const actionNode = hotKeyFactory.queryNode(target).find(domSelector, undefined,
+      polling) as QueryNodeType;
 
     actionNode.currentNode && actionNode.click(keyName, actionNode);
 
@@ -114,7 +116,7 @@ const hotKeyFactory: any = {
 
     return actionNode.currentNode;
   },
-  async triggerRegister(keyName: string, callback, polling?: boolean) {
+  async triggerRegister(keyName, callback, polling) {
     if (!hotKeyFactory.registerKey) return;
 
     const trigger = this.registerKey.find(item => item.key === keyName);
@@ -144,7 +146,7 @@ const hotKeyFactory: any = {
   },
   register(keyName) {
     return containerName => (className) => {
-      const registerKey = {
+      const registerKey: RegisterKey = {
         className,
         key: keyName,
         container: containerName,
@@ -165,7 +167,7 @@ const hotKeyFactory: any = {
       hotKeyFactory.registerKey = keys;
     }
   },
-  queryNode(target: HTMLElement): QueryNodeType {
+  queryNode(target) {
     const {
       find, next, prev, setFocus, clearFocus,
     } = this as QueryNodeType;  // tslint:disable-line
@@ -210,7 +212,7 @@ const hotKeyFactory: any = {
       }
     });
   },
-  async actionCompose(operation: string[], keyName: string, callback: any, isPolling: boolean) {
+  async actionCompose(operation, keyName, callback, isPolling) {
     let actionPromise = null;
     const { listener } = hotKeyFactory;
 
@@ -238,7 +240,7 @@ const hotKeyFactory: any = {
 
     return actionPromise;
   },
-  async actuator(keyName: string, callback: (target, index, keyName) => void, isPolling) {
+  async actuator(keyName, callback, isPolling) {
     hotKeyFactory.log(true, { keyName });
 
     if (await hotKeyFactory.triggerRegister(keyName, callback, isPolling)) return;
@@ -251,7 +253,7 @@ const hotKeyFactory: any = {
       await hotKeyFactory.actionCompose(operations[index], keyName, callback, isPolling);
     }
   },
-  async find(selector: string, isNew: boolean | void, polling?: boolean | void) {
+  async find(selector, isNew, polling) {
     let currentNode;
     if (!this.currentNode || isNew) {
       currentNode = await hotKeyFactory.asyncQueryHotKeyDom(selector, undefined, polling);
@@ -302,7 +304,7 @@ const hotKeyFactory: any = {
     const { clickBeforeProp } = hotKeyFactory;
     if (clickBeforeProp) return clickBeforeProp(keyName, node);
   },
-  setFocusId(id?: string | number | void) {
+  setFocusId(id) {
     return hotKeyFactory.focusId = id;
   },
   getFocusId() {
@@ -355,7 +357,7 @@ const hotKeyFactory: any = {
       handles.splice(handleIndex, 1);
     }
   },
-  listener(callback, result: any, index: number, keyName: string) {
+  listener(callback, result, index, keyName) {
     const node: HTMLElement = result.nodeType === 1 ? result : result.currentNode;
     hotKeyFactory.handles.forEach(handle => handle(node, index, keyName));
 

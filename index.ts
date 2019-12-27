@@ -208,7 +208,7 @@ const hotKeyFactory: HotKeyFactoryType = {
 
         resolve(hotKeyProto);
       } else {
-        hotKeyFactory.log(true, { waring: `not found hot ket target of [${className}]` });
+        hotKeyFactory.log(true, { waring: `not found hot key target of [${className}]` });
       }
     });
   },

@@ -1,7 +1,7 @@
 {
-  "name": "hot-key",
+  "name": "hotkey-trigger",
   "version": "1.0.0",
-  "description": "hot key",
+  "description": "hotkey trigger",
   "main": "lib/index.js",
   "scripts": {
     "start": "webpack-dev-server --config build/dev.js",
@@ -17,8 +17,8 @@
     "url": "git+https://github.com/Hzy0913/hot-key.git"
   },
   "keywords": [
-    "hot",
-    "key"
+    "hotkey",
+    "hotkey trigger"
   ],
   "author": "",
   "license": "ISC",

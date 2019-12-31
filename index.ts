@@ -5,34 +5,6 @@ import { queryHotKey, countClosure } from './utils';
 
 const keyboard = keymaster.noConflict();
 
-/**
- * Created by hzy on 2019/11/27.
- */
-/**
- * @hotKey(option) 调用hotKey方法初始化状态
- * @option 可传入选项 {handler: 全局的句柄默认为$}
- * @observerCallback dom变化后的回调
- * @log 是否显示log
- * @hotKeyConfig 快捷键配置项
- * @operationControl 快捷键权限控制
- * @clickBefore 点击事件前的回调方法
- *
- * 初始化后的方法
- * action 传入第一个参数 按键字符串，触发config中的动作，返回一个promise，执行then方法可以从参数中拿到当前的上下文对象
- * action 第二个参数为回调函数，回调函数的参数会返回当前的动作触发的元素属性以及当前为第几步
- *
- * observer 监听dom变化，第一个参数为监听的dom目标，第二个参数为配置  具体查看 new MutationObserver observer
- * find 查找dom，可链式调用
- * next 查找下一个兄弟节点，参数中可传入数量跳过几个相邻的
- * prev 查找上一个兄弟节点，参数中可传入数量跳过几个相邻的
- * click 触发点击事件
- * register 注册一个全局的快捷键，第一个方法参数为快捷键名，第二个方法参数为目标容器class名，第三个方法参数为触发事件dom class名
- * unRegister 注销一个全局的快捷键
- *
- * config & control 说明 见 ./config.js 文件
- *
- */
-
 const hotKeyFactory: HotKeyFactoryType = {
   constructor({
     keys = [],

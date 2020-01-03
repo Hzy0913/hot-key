@@ -42,3 +42,21 @@ trigger.register('a')('body')(['.button']);
 |  clickBefore | 触发事件点击前的回调方法  | function(keyName, node: QueryNodeType)  |   |
 |  hotKeyConfig | 快捷键触发动作配置，具体用法见下  | object  | -  |
 |  operationControl | 快捷键操作权限控制配置，具体用法见下  | object  | -  |
+
+
+### 方法及属性
+|  方法or属性 | 说明  | 类型  |
+| ------------ | ------------ | ------------ |
+|  action | 触发事件动作的方法，参数`keyName`为按键名，`callback(node, index, keyName)`为动作触发时的回调方法，`isPolling`为是否需要启用元素轮询查询  |  function(keyName: string, callback?: (node, index, keyName) => void, poll?: boolean) |
+|  find | dom节点查询方法，参数`selector`为选择器名，`isNew`为是否断开节点查询的上下文，`polling`是否启用轮询查询元素节点，方法会返回一个元素的包装对象，方便链式编程  |  function(selector: string, isNew: boolean &#124; void, polling?: boolean) |
+|  bind | 动态绑定新的按键以及事件  | function(keys: string[], callBack: (event) => void) |
+|  unbind | 解除绑定按键  | function(keys: string[]) |
+|  register | 注册对应按键上的触发事件节点  | function(keyName: string)(containerName: string)(className: string) |
+|  unRegister | 注销快捷键事件  | function(keyName: string) |
+|  setFocusId | 手动设置当前的焦点区ID  | function(id: string) |
+|  getFocusId | 获取设置当前的焦点区ID  | function() |
+|  setFocus | 设置当前焦点的容器，会在要设置的容器节点上添加一个`hot-key-focus-container`类名，全局只会存在一个焦点容器  | function(target: HTMLElement) |
+|  clearFocus | 清除焦点的容器  | function() |
+|  keys | 被监听的键盘按键名集合  |  string[] |
+|  hotKeyConfig | 快捷键触发动作配置  | object  |
+|  operationControl | 快捷键操作权限控制配置  | object  |

@@ -10,7 +10,7 @@ const hotKeyFactory: HotKeyFactoryType = {
     keys = [],
     handler,
     observerCallback,
-    pressed,
+    pressed = () => {},
     log = false,
     hotKeyConfig = {},
     operationControl = {},
@@ -260,8 +260,12 @@ const hotKeyFactory: HotKeyFactoryType = {
     return this;
   },
   setFocus(target) {
+    const focusClassName = 'hot-key-focus-container';
+    const currentFocusContainer = document.querySelector(`.${focusClassName}`);
+    currentFocusContainer && currentFocusContainer.classList.remove(focusClassName);
+
     const container = target || this.currentNode;
-    container && container.classList.add('hot-key-focus-container');
+    container && container.classList.add(focusClassName);
     hotKeyFactory.log(!container, { waring: 'the set focus container Dom is not found' });
   },
   clearFocus() {

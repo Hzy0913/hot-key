@@ -25,13 +25,12 @@ const trigger = hotKey({
 });
 
 trigger.register('a')('body')(['.button']);
-
 ```
+
 上面是简单的使用，通过`keys`参数传入需要监听的按键名，在`pressed` 方法中触发动作，
 最后我们为按键`a`注册触发的元素节点。
 
 ### API
-
 |  属性 | 说明  | 类型  | 默认值  |
 | ------------ | ------------ | ------------ | ------------ |
 |  keys | 需要被监听的键盘按键名  |  string[] | -  |
@@ -43,7 +42,6 @@ trigger.register('a')('body')(['.button']);
 |  hotKeyConfig | 快捷键触发动作配置，具体用法见下  | object  | -  |
 |  operationControl | 快捷键操作权限控制配置，具体用法见下  | object  | -  |
 
-
 ### 方法及属性
 |  方法or属性 | 说明  | 类型  |
 | ------------ | ------------ | ------------ |
@@ -54,9 +52,13 @@ trigger.register('a')('body')(['.button']);
 |  register | 注册对应按键上的触发事件节点  | function(keyName: string)(containerName: string)(className: string) |
 |  unRegister | 注销快捷键事件  | function(keyName: string) |
 |  setFocusId | 手动设置当前的焦点区ID  | function(id: string) |
-|  getFocusId | 获取设置当前的焦点区ID  | function() |
+|  getFocusId | 获取当前的焦点区ID  | function() |
 |  setFocus | 设置当前焦点的容器，会在要设置的容器节点上添加一个`hot-key-focus-container`类名，全局只会存在一个焦点容器  | function(target: HTMLElement) |
 |  clearFocus | 清除焦点的容器  | function() |
 |  keys | 被监听的键盘按键名集合  |  string[] |
 |  hotKeyConfig | 快捷键触发动作配置  | object  |
 |  operationControl | 快捷键操作权限控制配置  | object  |
+
+### 快捷键触发动作配置
+
+

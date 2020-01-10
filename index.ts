@@ -17,7 +17,13 @@ const hotKeyFactory: HotKeyFactoryType = {
     filter,
     clickBefore,
   }) {
-    keyboard(keys.join(), pressed);
+    keyboard(keys.join(), (event, handle) => {
+      const { key } = handle;
+      handle.currentHotKeyConfig = hotKeyConfig[key];
+      handle.currentOperationControl = operationControl[this.getFocusId()];
+
+      pressed(event, handle);
+    });
     filter && (keyboard.filter = filter);
 
     const observe = observerCallback && new MutationObserver(observerCallback);

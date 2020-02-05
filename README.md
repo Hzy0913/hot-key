@@ -20,7 +20,7 @@ const trigger = hotKey({
   keys: ['a', 's', 'd'],
   log: true,
   pressed(event) {
-    trigger.action(e.key);
+    trigger.action(event.key);
   }
 });
 
